@@ -36,7 +36,27 @@
                         # Docker?
                     </section>
                     <section>
-                        <image src="images/containers.png" height="600">
+                        <h3>Operating System Level Virtualization</h3>
+                        <image src="images/containers.png" height="500">
+                    </section>
+                    <section>
+                        <h3>It´s written in GO</h3>
+                        <pre><code data-trim class="hlsh">
+# Spin up 100 nginx containers in less than 1 minute
+time for i in $(seq 1 100); do
+   docker run -d -P --name nginx_$i nginx:alpine
+done
+
+# time: 0m56.476s
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h1>Virtual Machines?</h1>
+                        <image src="images/docker-vs-vm_vm.png" width="400">
+                    </section>
+                    <section>
+                        <image src="images/docker-vs-vm_docker.png" width="400">
+                        <image src="images/docker-vs-vm_vm.png" width="400">
                     </section>
                 </section>
                 <section data-markdown>
