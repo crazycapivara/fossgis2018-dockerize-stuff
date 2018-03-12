@@ -41,7 +41,7 @@
                     </section>
                     <section>
                         <h3>It´s written in GO</h3>
-                        <pre><code data-trim class="hlsh">
+                        <pre><code data-trim class="bash">
 # Spin up 100 nginx containers in less than 1 minute
 time for i in $(seq 1 100); do
    docker run -d -P --name nginx_$i nginx:alpine
@@ -61,7 +61,18 @@ done
                 </section>
                 <section data-markdown>
                     ## Yeah
-                </section>
+				</section>
+				<section>
+					<h1>Pull it</h1>
+					<pre><code data-trim class="bash">						
+$ docker pull kartoza/postgis
+
+Using default tag: latest
+latest: Pulling from kartoza/postgis
+974c2c350dc4: Downloading [========================>                          ] 22.46 MB/45.13 MB
+...
+					</code></pre>
+				</section>
 			</div>
 		</div>
 
