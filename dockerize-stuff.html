@@ -26,11 +26,13 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
+                <!-- title -->
 				<section>
                     <h1>Dockerize Stuff</h1>
                     <img src="images/docker-engine.png" height="400">
                     <h2>Postgis Swarm And More</h2>
-                </section>
+                </section> <!-- title end -->
+                <!-- docker and virtual machines -->
                 <section>
                     <section data-markdown>
                         # Docker?
@@ -58,21 +60,87 @@ done
                         <image src="images/docker-vs-vm_docker.png" width="400">
                         <image src="images/docker-vs-vm_vm.png" width="400">
                     </section>
-                </section>
+                </section> <!-- docker and virtual machines end -->
                 <section data-markdown>
                     ## Yeah
-				</section>
-				<section>
-					<h1>Pull it</h1>
-					<pre><code data-trim class="bash">						
-$ docker pull kartoza/postgis
+                </section>
+                <!-- Run single container -->
+                <section>
+                    <section>
+                        <h1>Postgis in a box</h1>
+                    </section>
+				    <section>
+				        <h2>Pull it</h2>
+					    <pre><code data-trim class="bash">						
+$ docker pull mdillon/postgis
 
 Using default tag: latest
-latest: Pulling from kartoza/postgis
+latest: Pulling from mdillon/postgis
 974c2c350dc4: Downloading [========================>                          ] 22.46 MB/45.13 MB
 ...
-					</code></pre>
-				</section>
+					    </code></pre>
+                    </section>
+                    <section>
+                        <h2>Run it</h2>
+                        <pre><code data-trim class="bash">
+$ docker run --name postgis \
+     -e POSTGRES_PASSWORD=docker \
+     -p 55432:5432 \
+     -d mdillon/postgis
+
+     d4fdb5c6b51b4463a3244ead0247640998bbcdb900f7ca6f2ce08206b5bfbc3a
+                    </code></pre>
+                    <pre><code data-trim class="yaml">
+     CONTAINER_ID: d4fdb5c6b51b
+     IMAGE: mdillon/postgis
+     PORTS: 0.0.0.0:55432->5432/tcp
+     NAME: postgis  
+                        </code></pre>
+                    </section>
+                </section> <!-- Run single container end -->
+                <!-- networks -->
+                <section>
+                    <section>
+                        <h1>Networks in docker</h1>
+                    </section>
+                    <section>
+                        <h2>bridge</h2>
+                        <p><i> ... are best when you need multiple containers to communicate on the same Docker host.</i></p>
+                        <pre><code data-trim class="bash">
+$ docker network create fossgis
+
+$ docker run --name postgis --network postgis -p 55432:5432 -d mdillon/postgis
+$ docker run --name geoserver --network fossgis -p 58080:8080 -d kartoza/geoserver
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code data-trim class="bash">
+$ docker network inspect fossgis | jq ".[].Containers"
+                        </code></pre>
+                        <pre><code data-trim class="json">
+{
+    "5c8b8cf8c7631c028694653e3d35f72d709ab6c9a3fb6b7e127de6993685d10d": {
+        "Name": "geoserver",
+        "EndpointID": "d63198bdab9b9edcf641ecedd2b21853af8c35e574b6e3347ce4fff42baa8163",
+        "MacAddress": "02:42:ac:13:00:03",
+        "IPv4Address": "172.19.0.3/16",
+        "IPv6Address": ""
+    },
+   "e500639420b3f26781652105402bae57e759905514e0f81550450783da35ce61": {
+        "Name": "postgis",
+        "EndpointID": "c6fd0c7388182ade5e600fda374a4e8d220e26b88f66aebf59fb8c747ebd6b1f",
+        "MacAddress": "02:42:ac:13:00:02",
+        "IPv4Address": "172.19.0.2/16",
+        "IPv6Address": ""
+    }
+}                                  
+                        </code></pre>
+                    </section>
+                    <section>
+                        <p>http://localhost:58080/geoserver</p>
+                        <img src="images/geoserver-postgis.png" height="400">
+                    </section>
+                </section> <!-- networks end -->
 			</div>
 		</div>
 
