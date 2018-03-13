@@ -102,6 +102,7 @@ $ docker run --name postgis \
                 <section>
                     <section>
                         <h1>Networks in docker</h1>
+                        <p>bridge, overlay, ...</p>
                     </section>
                     <section>
                         <h2>bridge</h2>
@@ -140,7 +141,45 @@ $ docker network inspect fossgis | jq ".[].Containers"
                         <p>http://localhost:58080/geoserver</p>
                         <img src="images/geoserver-postgis.png" height="400">
                     </section>
+                    <section>
+                        <h2>overlay</h2>
+                        <p><i>... are best when you need containers running on different Docker hosts to communicate,
+                            or when multiple applications work together using swarm services.</i></p>
+                            <pre><code data-trim class="bash">$ docker network create --driver overlay fossgis_swarm</code></pre>
+                    </section>
                 </section> <!-- networks end -->
+                <!-- docker compose -->
+                <section>
+                    <section>
+                        <h1>docker compose</h1>
+                        <pre><code data-trim class="yaml">
+version: "2"
+
+services:
+    postgis:
+        image: mdillon/postgis
+        ports:
+            - "55432:5432"
+        environment:
+            - POSTGRES_PASSWORD=docker
+    geoserver:
+        image: kartoza/geoserver
+        ports:
+            - "58080:8080"
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Run services</h2>
+                        <pre><code data-trim class="bash">
+$ cd docker
+$ docker-compose up -d
+
+Creating network "docker_default" with the default driver
+Creating docker_postgis_1
+Creating docker_geoserver_1
+                        </code></pre>
+                    </section>
+                </section> <!-- docker compose -->
 			</div>
 		</div>
 
