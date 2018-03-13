@@ -180,6 +180,45 @@ Creating docker_geoserver_1
                         </code></pre>
                     </section>
                 </section> <!-- docker compose -->
+                <!-- docker swarm -->
+                <section>
+                    <section>
+                        <h1>Orchestration</h1>
+                        <ul>
+                            <li><a href="https://docker.com">Docker Swarm</a></li>
+                            <li><a href="https://kubernetes.io">Kubernetes</a></li>
+                            <li><a href="http://rancher.com">Rancher</a></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Docker Swarm</h2>
+                        <p>Since Docker Version 1.12</p>
+                        <img src="images/docker-swarm-logo.png" height="300">
+                        <p>Managers & Workers</p>
+                    </section>
+                    <section>
+                        <h2>Manager</h2>
+                        <img src="images/zoidberg-swarm.png" height="300">
+                        <pre><code data-trim class="bash"># Create a manager
+$ docker swarm init --advertise-addr 192.168.99.100
+
+# Generate the token needed to join the manager
+$ docker swarm join-token worker</code></pre>
+                    </section>
+                    <section>
+                        <h2>Workers</h2>
+                        <img src="images/pi_swarm.jpg">
+                        <pre><code data-trim class="bash"># Join the manager
+docker swarm join --token [...] 192.168.99.100:2377</code></pre>
+                    </section>
+                    <section>
+                        <h2>Deploy a service</h2>
+                        <pre><code data-trim class="bash">$ docker service create \
+   --replicas 2 \
+   --name helloworld \
+   alpine ping docker.com</code></pre>
+                    </section>
+                </section> <!-- docker swarm end -->
 			</div>
 		</div>
 
