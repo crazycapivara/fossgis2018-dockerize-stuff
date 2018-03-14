@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <link href="https://fonts.googleapis.com/css?family=Calligraffitti|Chelsea+Market|Open+Sans+Condensed:300|PT+Sans|Ubuntu:300|Vollkorn" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=PT+Mono|Open+Sans+Condensed:300|PT+Sans|Ubuntu:300|Vollkorn" rel="stylesheet">
 
 		<title>dockerize stuff</title>
 
@@ -30,37 +30,45 @@
 				<section>
                     <h1>Dockerize Stuff</h1>
                     <img src="images/docker-engine.png" height="400">
+                    <!--<img src="images/docker-contributors.png" height="300" style="_border: 2px solid green; border-radius: 10px;">-->
                     <h2>Postgis Swarm And More</h2>
                 </section> <!-- title end -->
-                <!-- docker and virtual machines -->
+                <!-- docker -->
                 <section>
                     <section data-markdown>
                         # Docker?
+                    </section>
+                    <section>
+                        <h3>It´s written in</h3>
+                        <img src="images/golang-org.png" height="400px">
                     </section>
                     <section>
                         <h3>Operating System Level Virtualization</h3>
                         <image src="images/containers.png" height="500">
                     </section>
                     <section>
-                        <h3>It´s written in GO</h3>
-                        <pre><code data-trim class="bash">
-# Spin up 100 nginx containers in less than 1 minute
-time for i in $(seq 1 100); do
-   docker run -d -P --name nginx_$i nginx:alpine
-done
-
-# time: 0m56.476s
-                        </code></pre>
+                        <h3>Spin up 100 nginx containers in less than 1 minute</h3>
+<pre><code data-trim class="bash">
+$ time for i in $(seq 1 100); do \
+     docker run -d -P --name nginx_$i nginx:alpine \
+  done
+</code></pre>
+                        <p>0m56.476s</p>
                     </section>
+                 </section> <!-- docker end -->
+                 <!-- virtual machines -->
+                 <section>   
                     <section>
                         <h1>Virtual Machines?</h1>
+                        <h2>Hardware Virtualization</h2>
                         <image src="images/docker-vs-vm_vm.png" width="400">
                     </section>
                     <section>
+                        <h2>Docker Vs VM</h2>
                         <image src="images/docker-vs-vm_docker.png" width="400">
                         <image src="images/docker-vs-vm_vm.png" width="400">
                     </section>
-                </section> <!-- docker and virtual machines end -->
+                </section> <!-- virtual machines end -->
                 <section data-markdown>
                     ## Yeah
                 </section>
@@ -71,54 +79,56 @@ done
                     </section>
 				    <section>
 				        <h2>Pull it</h2>
-					    <pre><code data-trim class="bash">						
+<pre><code data-trim class="bash">						
 $ docker pull mdillon/postgis
 
 Using default tag: latest
 latest: Pulling from mdillon/postgis
 974c2c350dc4: Downloading [========================>                          ] 22.46 MB/45.13 MB
 ...
-					    </code></pre>
+</code></pre>
                     </section>
                     <section>
                         <h2>Run it</h2>
-                        <pre><code data-trim class="bash">
+<pre><code data-trim class="bash">
 $ docker run --name postgis \
      -e POSTGRES_PASSWORD=docker \
      -p 55432:5432 \
      -d mdillon/postgis
 
-     d4fdb5c6b51b4463a3244ead0247640998bbcdb900f7ca6f2ce08206b5bfbc3a
-                    </code></pre>
-                    <pre><code data-trim class="yaml">
+  d4fdb5c6b51b4463a3244ead0247640998bbcdb900f7ca6f2ce08206b5bfbc3a
+</code></pre>
+ <pre><code data-trim class="yaml">
      CONTAINER_ID: d4fdb5c6b51b
      IMAGE: mdillon/postgis
      PORTS: 0.0.0.0:55432->5432/tcp
      NAME: postgis  
-                        </code></pre>
+ </code></pre>
                     </section>
                 </section> <!-- Run single container end -->
                 <!-- networks -->
                 <section>
                     <section>
-                        <h1>Networks in docker</h1>
+                        <h1>Networks in Docker</h1>
+                        <img src="images/docker-turtles-communication.jpg" height="200">
                         <p>bridge, overlay, ...</p>
                     </section>
                     <section>
                         <h2>bridge</h2>
                         <p><i> ... are best when you need multiple containers to communicate on the same Docker host.</i></p>
-                        <pre><code data-trim class="bash">
+<pre><code data-trim class="bash">
 $ docker network create fossgis
 
 $ docker run --name postgis --network fossgis -p 55432:5432 -d mdillon/postgis
 $ docker run --name geoserver --network fossgis -p 58080:8080 -d kartoza/geoserver
-                        </code></pre>
+</code></pre>
                     </section>
                     <section>
-                        <pre><code data-trim class="bash">
+                        <p>$ docker network inspect fossgis</p>
+<!--<pre><code data-trim class="bash">
 $ docker network inspect fossgis | jq ".[].Containers"
-                        </code></pre>
-                        <pre><code data-trim class="json">
+</code></pre>-->
+<pre><code data-trim class="json">
 {
     "5c8b8cf8c7631c028694653e3d35f72d709ab6c9a3fb6b7e127de6993685d10d": {
         "Name": "geoserver",
@@ -135,7 +145,7 @@ $ docker network inspect fossgis | jq ".[].Containers"
         "IPv6Address": ""
     }
 }                                  
-                        </code></pre>
+</code></pre>
                     </section>
                     <section>
                         <p>http://localhost:58080/geoserver</p>
@@ -194,7 +204,7 @@ Creating docker_geoserver_1
                         <h2>Docker Swarm</h2>
                         <p>Since Docker Version 1.12</p>
                         <img src="images/docker-swarm-logo.png" height="300">
-                        <p>Managers & Workers</p>
+                        <p>Managers And Workers</p>
                     </section>
                     <section>
                         <h2>Manager</h2>
@@ -226,21 +236,21 @@ docker swarm join --token [...] 192.168.99.100:2377</code></pre>
                     </section>
                     <section>
                         <h2>Swarm setup</h2>
-                        <p>See slides to "Docker Swarm"</p>
+                        <p>See slides to <a href="#/7/1">Docker Swarm</a></p>
                     </section>
                     <section>
                         <h2>Network setup</h2>
                         <p>Create an overlay network on the manager node</p>
-                        <pre><code>$ docker network create --driver overlay postgis_swarm</code></pre>
+                        <pre><code class="bash">$ docker network create --driver overlay postgis_swarm</code></pre>
                     </section>
                     <section>
                         <h2>Master setup</h2>
                         <p>Add label to worker1</p> 
-                        <pre><code>$ docker node update --label-add type=master worker1</code></pre>
+                        <pre><code class="bash">$ docker node update --label-add type=master worker1</code></pre>
                     </section>
                     <section>
-                        <h2>Run master service</h2>
-                        <pre><code data-trim>
+                        <h2>Run master (primary) service</h2>
+<pre><code data-trim class="bash">
 #!/bin/bash
 MASTER_SERVICE_NAME="postgis-master"
 
@@ -261,17 +271,95 @@ docker service create \
    --env PG_PRIMARY_PASSWORD=password \
    --env PGDATA_PATH_OVERRIDE=persistent \
    crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0                             
-                        </code></pre>
+</code></pre>
                     </section>
                     <section>
-                        <h3>Some header</h3>
+                        <h3>Primary options in detail</h3>
                         <ul>
-                            <li>--mount<br> type=volume,<br> src=$MASTER_SERVICE_NAME-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
-                            <li class="fragment">--network postgis_swarm</li>
-                            <li class="fragment">--constraint 'node.labels.type == master'</li>
-                            <li class="fragment">--env PG_MODE=primary</li>
-                            <li class="fragment">--env PGDATA_PATH_OVERRIDE=persistent</li>
+                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=$MASTER_SERVICE_NAME-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
+                            <li class="fragment"><span class="doption">--network</span> postgis_swarm</li>
+                            <li class="fragment"><span class="doption">--constraint</span> 'node.labels.type <span class="doption2">==</span> master'</li>
+                            <li class="fragment"><span class="doption">--env</span> PG_MODE=<span class="doption2">primary</span></li>
+                            <li class="fragment"><span class="doption">--env</span> PGDATA_PATH_OVERRIDE=persistent</li>
                         </ul>
+                    </section>
+                    <section>
+                        <p>$ docker service ls</p>
+<pre><code data-trim class="bash">
+ID            NAME            MODE        REPLICAS  IMAGE
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+</code></pre>
+<!--
+ID            NAME            MODE        REPLICAS  IMAGE
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+-->                        
+                    </section>
+                    <section>
+                        <h2>Run worker</h2>
+<pre><code data-trim class="bash">
+#!/bin/bash
+MASTER_SERVICE_NAME="postgis-master"
+SERVICE_NAME=postgis-worker
+VOLUME_NAME=$SERVICE_NAME-volume
+                        
+docker service create \
+   --publish "15432:5432" \
+   --mount type=volume,src=$VOLUME_NAME,dst=/pgdata,volume-driver=local \
+   --name $SERVICE_NAME \
+   --network postgis_swarm \
+   --constraint 'node.labels.type != master' \
+   --env PGHOST=/tmp \
+   --env PG_USER=testuser \
+   --env PG_MODE=replica \
+   --env PG_PRIMARY_USER=master \
+   --env PG_ROOT_PASSWORD=password \
+   --env PG_PASSWORD=password \
+   --env PG_DATABASE=userdb \
+   --env PG_PRIMARY_PORT=5432 \
+   --env PG_PRIMARY_PASSWORD=password \
+   --env PG_PRIMARY_HOST=$MASTER_SERVICE_NAME \
+   --env PGDATA_PATH_OVERRIDE=persistent \
+   crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+</code></pre>                        
+                    </section>
+<!--
+ID            NAME            MODE        REPLICAS  IMAGE
+s9eyg3kvn0mz  postgis-worker  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0    
+-->
+                    <section>
+                        <h3>Worker options in detail</h3>
+                        <ul>
+                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=$MASTER_SERVICE_NAME-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
+                            <li class="fragment"><span class="doption">--network</span> postgis_swarm</li>
+                            <li class="fragment"><span class="doption">--constraint</span> 'node.labels.type <span class="doption2">!=</span> master'</li>
+                            <li class="fragment"><span class="doption">--env</span> PG_MODE=<span class="doption2">replica</span></li>
+                            <li class="fragment"><span class="doption">--env</span> PGDATA_PATH_OVERRIDE=persistent</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <p>$ docker service ls</p>
+<pre><code data-trim class="bash">
+ID            NAME            MODE        REPLICAS  IMAGE
+s9eyg3kvn0mz  postgis-worker  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0    
+</code></pre>
+                    </section>
+                    <section>
+                        <h3>Test Postgis cluster</h3>
+<pre><code data-trim class="bash">
+# Show on which node your Postgis instances are running
+$ docker service ps postgis-master
+$ docker service ps postgis-worker
+
+$ docker exec \
+     -it $(docker ps -q --filter name=postgis-master*) bash
+    
+bash-4.2$  psql -U postgres -c 'table pg_stat_replication' postgres
+
+# You should see a row for each replica
+# along with its replication status. 
+</code></pre>
                     </section>
                 </section> <!-- postgis cluster end -->
 			</div>
