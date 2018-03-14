@@ -91,19 +91,25 @@ latest: Pulling from mdillon/postgis
                     <section>
                         <h2>Run it</h2>
 <pre><code data-trim class="bash">
-$ docker run --name postgis \
+$ docker run -d --name postgis \
      -e POSTGRES_PASSWORD=docker \
      -p 55432:5432 \
-     -d mdillon/postgis
+     mdillon/postgis
 
-  d4fdb5c6b51b4463a3244ead0247640998bbcdb900f7ca6f2ce08206b5bfbc3a
+d4fdb5c6b51b4463a3244ead0247640998bbcdb900f7ca6f2ce08206b5bfbc3a
+
+$ docker ps
+
+CONTAINER ID   IMAGE             ...   PORTS                     NAMES
+8efe6f9e6132   mdillon/postgis   ...   0.0.0.0:55432->5432/tcp   postgis
 </code></pre>
- <pre><code data-trim class="yaml">
+<!--
+<pre><code data-trim class="yaml">
      CONTAINER_ID: d4fdb5c6b51b
      IMAGE: mdillon/postgis
      PORTS: 0.0.0.0:55432->5432/tcp
-     NAME: postgis  
- </code></pre>
+     NAME: postgis</code></pre>
+-->
                     </section>
                 </section> <!-- Run single container end -->
                 <!-- networks -->
@@ -115,20 +121,23 @@ $ docker run --name postgis \
                     </section>
                     <section>
                         <h2>bridge</h2>
-                        <p><i> ... are best when you need multiple containers to communicate on the same Docker host.</i></p>
-<pre><code data-trim class="bash">
+                        <blockquote>&ldquo;... are best when you need multiple containers to communicate on the same Docker host.&ldquo;</blockquote>
+<pre class="fragment"><code data-trim class="bash">
 $ docker network create fossgis
 
-$ docker run --name postgis --network fossgis -p 55432:5432 -d mdillon/postgis
-$ docker run --name geoserver --network fossgis -p 58080:8080 -d kartoza/geoserver
-</code></pre>
+$ docker run --network fossgis \
+     --name postgis -p 55432:5432 -d mdillon/postgis
+
+$ docker run --network fossgis \
+     --name geoserver -p 58080:8080 -d kartoza/geoserver</code></pre>
                     </section>
                     <section>
-                        <p>$ docker network inspect fossgis</p>
+                        <h2>Inspect network</h2>
+                        <pre><code class="bash">$ docker network inspect fossgis</code></pre>
 <!--<pre><code data-trim class="bash">
 $ docker network inspect fossgis | jq ".[].Containers"
 </code></pre>-->
-<pre><code data-trim class="json">
+<pre class="fragment"><code data-trim class="json">
 {
     "5c8b8cf8c7631c028694653e3d35f72d709ab6c9a3fb6b7e127de6993685d10d": {
         "Name": "geoserver",
@@ -144,26 +153,35 @@ $ docker network inspect fossgis | jq ".[].Containers"
         "IPv4Address": "172.19.0.2/16",
         "IPv6Address": ""
     }
-}                                  
-</code></pre>
+}</code></pre>
                     </section>
+                    <!--
                     <section>
                         <p>http://localhost:58080/geoserver</p>
                         <img src="images/geoserver-postgis.png" height="400">
                     </section>
+                    -->
                     <section>
                         <h2>overlay</h2>
-                        <p><i>... are best when you need containers running on different Docker hosts to communicate,
-                            or when multiple applications work together using swarm services.</i></p>
-                            <pre><code data-trim class="bash">$ docker network create --driver overlay fossgis_swarm</code></pre>
+                        <blockquote>&ldquo;... are best when you need containers running on different Docker hosts to communicate,
+                            or when multiple applications work together using swarm services.&ldquo;</blockquote>
+<pre class="fragment"><code data-trim class="bash">
+$ docker network create --driver overlay fossgis_swarm
+
+$ docker service create \
+     --network fossgis_swarm mdillon/postgis</code></pre>
                     </section>
                 </section> <!-- networks end -->
                 <!-- docker compose -->
                 <section>
                     <section>
-                        <h1>docker compose</h1>
-                        <pre><code data-trim class="yaml">
-version: "2"
+                        <h1>Docker Compose</h1>
+                        <img src="images/docker-compose-logo.png" height="400">
+                    </section>
+                    <section>
+                        <h2>Compose File</h2>
+<pre><code data-trim class="yaml">
+version: 2
 
 services:
     postgis:
@@ -175,19 +193,26 @@ services:
     geoserver:
         image: kartoza/geoserver
         ports:
-            - "58080:8080"
-                        </code></pre>
+            - "58080:8080"</code></pre>
                     </section>
                     <section>
                         <h2>Run services</h2>
-                        <pre><code data-trim class="bash">
+<pre><code data-trim class="bash">
+# Assuming your 'docker-compose.yml'
+# is located in a folder called 'docker'
 $ cd docker
 $ docker-compose up -d
 
 Creating network "docker_default" with the default driver
 Creating docker_postgis_1
 Creating docker_geoserver_1
-                        </code></pre>
+
+$ docker ps
+
+CONTAINER ID   IMAGE               ...   PORTS                     NAMES
+2e800f486389   kartoza/geoserver   ...   0.0.0.0:58080->8080/tcp   docker_geoserver_1
+8efe6f9e6132   mdillon/postgis     ...   0.0.0.0:55432->5432/tcp   docker_postgis_1
+</code></pre>
                     </section>
                 </section> <!-- docker compose -->
                 <!-- docker swarm -->
@@ -202,9 +227,9 @@ Creating docker_geoserver_1
                     </section>
                     <section>
                         <h2>Docker Swarm</h2>
-                        <p>Since Docker Version 1.12</p>
+                        <p>Since Docker version 1.12</p>
                         <img src="images/docker-swarm-logo.png" height="300">
-                        <p>Managers And Workers</p>
+                        <p>Managers and Workers</p>
                     </section>
                     <section>
                         <h2>Manager</h2>
@@ -232,24 +257,28 @@ docker swarm join --token [...] 192.168.99.100:2377</code></pre>
                 <!-- postgis cluster -->
                 <section>
                     <section>
-                        <h1>Postgis cluster</h1>
+                        <h1>Postgis Cluster</h1>
+                        <img src="images/chrunchy-data.png" width="200">
+                        <img src="images/docker-and-postgres-logos.png" width="400">
+                        <p>with Docker Swarm<br>
+                            and Postgis Containers by <a href="https://github.com/crunchydata">Chrunchy Data</a></p>
                     </section>
                     <section>
-                        <h2>Swarm setup</h2>
+                        <h2>Swarm Setup</h2>
                         <p>See slides to <a href="#/7/1">Docker Swarm</a></p>
                     </section>
                     <section>
-                        <h2>Network setup</h2>
+                        <h2>Network Setup</h2>
                         <p>Create an overlay network on the manager node</p>
                         <pre><code class="bash">$ docker network create --driver overlay postgis_swarm</code></pre>
                     </section>
                     <section>
-                        <h2>Master setup</h2>
+                        <h2>Master Setup</h2>
                         <p>Add label to worker1</p> 
                         <pre><code class="bash">$ docker node update --label-add type=master worker1</code></pre>
                     </section>
                     <section>
-                        <h2>Run master (primary) service</h2>
+                        <h2>Create master (primary)</h2>
 <pre><code data-trim class="bash">
 #!/bin/bash
 MASTER_SERVICE_NAME="postgis-master"
@@ -284,8 +313,10 @@ docker service create \
                         </ul>
                     </section>
                     <section>
-                        <p>$ docker service ls</p>
+                        <h3>List services</h3>
 <pre><code data-trim class="bash">
+$ docker service ls
+    
 ID            NAME            MODE        REPLICAS  IMAGE
 xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
 </code></pre>
@@ -295,7 +326,7 @@ xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres
 -->                        
                     </section>
                     <section>
-                        <h2>Run worker</h2>
+                        <h2>Create worker</h2>
 <pre><code data-trim class="bash">
 #!/bin/bash
 MASTER_SERVICE_NAME="postgis-master"
@@ -338,8 +369,10 @@ xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres
                         </ul>
                     </section>
                     <section>
-                        <p>$ docker service ls</p>
+                        <h3>List services again</h3>
 <pre><code data-trim class="bash">
+$ docker service ls
+
 ID            NAME            MODE        REPLICAS  IMAGE
 s9eyg3kvn0mz  postgis-worker  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
 xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0    
@@ -360,6 +393,18 @@ bash-4.2$  psql -U postgres -c 'table pg_stat_replication' postgres
 # You should see a row for each replica
 # along with its replication status. 
 </code></pre>
+                    </section>
+                    <section>
+                        <h2>Create GeoServer</h2>
+<pre><code data-trim class="bash">
+#!/bin/bash
+docker service create \
+   --publish "48080:8080" \
+   --name geoserver_swarm \
+   --network postgis_swarm \
+   --constraint 'node.labels.type == master' \
+   kartoza/geoserver
+</pre></code>
                     </section>
                 </section> <!-- postgis cluster end -->
 			</div>
