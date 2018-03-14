@@ -29,9 +29,10 @@
                 <!-- title -->
 				<section>
                     <h1>Dockerize Stuff</h1>
-                    <img src="images/docker-engine.png" height="400">
+                    <img src="images/docker-engine.png" height="300">
                     <!--<img src="images/docker-contributors.png" height="300" style="_border: 2px solid green; border-radius: 10px;">-->
                     <h2>Postgis Swarm And More</h2>
+                    <p>StefanKüthe@FOSSGIS 2018</p>
                 </section> <!-- title end -->
                 <!-- docker -->
                 <section>
@@ -39,7 +40,7 @@
                         # Docker?
                     </section>
                     <section>
-                        <h3>It´s written in</h3>
+                        <h2>It´s written in</h2>
                         <img src="images/golang-org.png" height="400px">
                     </section>
                     <section>
@@ -55,18 +56,39 @@ $ time for i in $(seq 1 100); do \
 </code></pre>
                         <p>0m56.476s</p>
                     </section>
+                    <section>
+                        <h2>Images and Containers</h2>
+                        <img src="images/sharing-layers.jpg" height="400">
+                    </section>
+                    <section>
+                        <h2>Image</h2>
+                        <blockquote>&ldquo;An image is a <span class="doption">lightweight, stand-alone, executable package</span> that includes everything
+                            needed to run a piece of software, including the code, a runtime, libraries, environment variables, and config files.&ldquo;</blockquote>
+                    </section>
+                    <section>
+                        <h2>Container</h2>
+                        <blockquote>&ldquo;A container is a <span class="doption">runtime instance of an image</span>[...]&ldquo;</blockquote>
+                        <blockquote class="fragment">&ldquo;It runs <span class="doption">completely isolated from the host environment</span> by default,
+                            only accessing host files and ports if configured to do so.&ldquo;</blockquote>
+                    </section>
                  </section> <!-- docker end -->
                  <!-- virtual machines -->
                  <section>   
                     <section>
                         <h1>Virtual Machines?</h1>
+                    </section>
+                    <section>
                         <h2>Hardware Virtualization</h2>
                         <image src="images/docker-vs-vm_vm.png" width="400">
                     </section>
                     <section>
-                        <h2>Docker Vs VM</h2>
+                        <h2>Docker Vs VMs</h2>
                         <image src="images/docker-vs-vm_docker.png" width="400">
                         <image src="images/docker-vs-vm_vm.png" width="400">
+                    </section>
+                    <section>
+                        <h2>Docker and VMs</h2>
+                        <image src="images/containers-vms-together.png" height="400"></image>
                     </section>
                 </section> <!-- virtual machines end -->
                 <section data-markdown>
@@ -116,12 +138,15 @@ CONTAINER ID   IMAGE             ...   PORTS                     NAMES
                 <section>
                     <section>
                         <h1>Networks in Docker</h1>
-                        <img src="images/docker-turtles-communication.jpg" height="200">
+                        <!--<img src="images/docker-turtles-communication.jpg" height="200">-->
+                        <img src="images/bridge-network.png" height="200">
+                        <img src="images/network-access.png" height="300" class="fragment">
                         <p>bridge, overlay, ...</p>
                     </section>
                     <section>
                         <h2>bridge</h2>
-                        <blockquote>&ldquo;... are best when you need multiple containers to communicate on the same Docker host.&ldquo;</blockquote>
+                        <blockquote>&ldquo;... are best when you need <span class="doption2">multiple containers</span> to communicate
+                            on the <span class="doption2">same Docker host</span>.&ldquo;</blockquote>
 <pre class="fragment"><code data-trim class="bash">
 $ docker network create fossgis
 
@@ -163,7 +188,7 @@ $ docker network inspect fossgis | jq ".[].Containers"
                     -->
                     <section>
                         <h2>overlay</h2>
-                        <blockquote>&ldquo;... are best when you need containers running on different Docker hosts to communicate,
+                        <blockquote>&ldquo;... are best when you need <span class="doption2">containers running on different Docker hosts</span> to communicate,
                             or when multiple applications work together using swarm services.&ldquo;</blockquote>
 <pre class="fragment"><code data-trim class="bash">
 $ docker network create --driver overlay fossgis_swarm
@@ -407,6 +432,24 @@ docker service create \
 </pre></code>
                     </section>
                 </section> <!-- postgis cluster end -->
+                <section>
+                    <!-- The end -->
+                    <section>
+                        <h1>The End</h1>
+                    </section>
+                    <section>
+                        <h1>Hey ho</h1>
+                        <p>Stefan Küthe<br>
+                        stefan.kuethe@manserv.de</p>
+                        <ul>
+                            <li>dockerhub:<br>
+                                <a href="https://hub.docker.com/r/crazycapivara">https://hub.docker.com/r/crazycapivara</a></li>
+                            <li>github:<br>
+                                <a href="https://github.com/crazycapivara">https://github.com/crazycapivara</a></li>
+                            <li><a href="https://github.com/crazycapivara/docker-postgis-cluster">docker-postgis-cluster</a></li>
+                        </ul>
+                    </section>
+                </section> <!-- The end end -->
 			</div>
 		</div>
 
