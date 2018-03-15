@@ -433,7 +433,7 @@ $ docker service ps postgis-worker
 $ docker exec \
      -it $(docker ps -q --filter name=postgis-master*) bash
     
-bash-4.2$  psql -U postgres -c 'table pg_stat_replication' postgres
+bash-4.2$ psql -U postgres -c 'table pg_stat_replication' postgres
 
 # You should see a row for each replica
 # along with its replication status. 
