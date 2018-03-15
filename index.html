@@ -4,10 +4,13 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+        <!--<link href="https://fonts.googleapis.com/css?family=PT+Mono|Open+Sans+Condensed:300|PT+Sans|Ubuntu:300|Vollkorn" rel="stylesheet">-->
+
+		<title>dockerize stuff</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+		<link rel="stylesheet" href="css/theme/bender.css">
+        <!--<link rel="stylesheet" href="lib/font/pt-mono/pt-mono.css">-->
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -24,8 +27,472 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+                <!-- title -->
+				<section>
+                    <h1>Dockerize Stuff</h1>
+                    <img src="images/docker-engine.png" height="300">
+                    <!--<img src="images/docker-contributors.png" height="300" style="_border: 2px solid green; border-radius: 10px;">-->
+                    <h2>Postgis Swarm And More</h2>
+                    <p>StefanKüthe@FOSSGIS 2018</p>
+                </section> <!-- title end -->
+                <!-- docker -->
+                <section>
+                    <section data-markdown>
+                        # Docker?
+                    </section>
+                    <section>
+                        <h2>It´s written in</h2>
+                        <img src="images/golang-org.png" height="400px">
+                    </section>
+                    <section>
+                        <h3>Operating System Level Virtualization</h3>
+                        <image src="images/containers.png" height="500">
+                    </section>
+                    <section>
+                        <h3>Spin up 100 nginx containers in less than 1 minute</h3>
+<pre><code data-trim class="bash">
+$ time for i in $(seq 1 100); do \
+     docker run -d -P --name nginx_$i nginx:alpine \
+  done
+</code></pre>
+                        <p>0m56.476s</p>
+                    </section>
+                    <section>
+                        <h2>Images and Containers</h2>
+                        <img src="images/sharing-layers.jpg" height="400">
+                    </section>
+                    <section>
+                        <h2>Image</h2>
+                        <blockquote>&ldquo;An image is a <span class="doption">lightweight, stand-alone, executable package</span> that includes everything
+                            needed to run a piece of software, including the code, a runtime, libraries, environment variables, and config files.&ldquo;</blockquote>
+                    </section>
+                    <section>
+                        <h2>Dockerfile</h2>
+<pre><code data-trim class="docker">
+FROM ubuntu:16.04
+
+LABEL maintainer="Stefan Kuethe"
+
+RUN apt-get update \
+    && apt-get install python-mapnik -y --no-install-recommends \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./data /mapnik/example
+
+WORKDIR /mapnik/example
+
+CMD ["python", "generate_tiles.py", "map_file.xml"]
+</code></pre>                        
+                    </section>
+                    <section>
+                        <h2>Container</h2>
+                        <blockquote>&ldquo;A container is a <span class="doption">runtime instance of an image</span>[...]&ldquo;</blockquote>
+                        <blockquote class="fragment">&ldquo;It runs <span class="doption">completely isolated from the host environment</span> by default,
+                            only accessing host files and ports if configured to do so.&ldquo;</blockquote>
+                    </section>
+                 </section> <!-- docker end -->
+                 <!-- virtual machines -->
+                 <section>   
+                    <section>
+                        <h1>Virtual Machines?</h1>
+                    </section>
+                    <section>
+                        <h2>Hardware Virtualization</h2>
+                        <image src="images/docker-vs-vm_vm.png" width="400">
+                    </section>
+                    <section>
+                        <h2>Docker Vs VMs</h2>
+                        <image src="images/docker-vs-vm_docker.png" width="400">
+                        <image src="images/docker-vs-vm_vm.png" width="400">
+                    </section>
+                    <section>
+                        <h2>Docker and VMs</h2>
+                        <image src="images/containers-vms-together.png" height="400"></image>
+                    </section>
+                </section> <!-- virtual machines end -->
+                <section data-markdown>
+                    ## Yeah
+                </section>
+                <!-- Run single container -->
+                <section>
+                    <section>
+                        <h1>Postgis in a box</h1>
+                    </section>
+				    <section>
+				        <h2>Pull it</h2>
+<pre><code data-trim class="bash">						
+$ docker pull mdillon/postgis
+
+Using default tag: latest
+latest: Pulling from mdillon/postgis
+974c2c350dc4: Downloading [========================>                          ] 22.46 MB/45.13 MB
+...
+</code></pre>
+                    </section>
+                    <section>
+                        <h2>Run it</h2>
+<pre><code data-trim class="bash">
+$ docker run -d --name postgis \
+     -e POSTGRES_PASSWORD=docker \
+     -p 55432:5432 \
+     mdillon/postgis
+
+d4fdb5c6b51b4463a3244ead0247640998bbcdb900f7ca6f2ce08206b5bfbc3a
+
+$ docker ps
+
+CONTAINER ID   IMAGE             ...   PORTS                     NAMES
+8efe6f9e6132   mdillon/postgis   ...   0.0.0.0:55432->5432/tcp   postgis
+</code></pre>
+<!--
+<pre><code data-trim class="yaml">
+     CONTAINER_ID: d4fdb5c6b51b
+     IMAGE: mdillon/postgis
+     PORTS: 0.0.0.0:55432->5432/tcp
+     NAME: postgis</code></pre>
+-->
+                    </section>
+                </section> <!-- Run single container end -->
+                <!-- networks -->
+                <section>
+                    <section>
+                        <h1>Networks in Docker</h1>
+                        <!--<img src="images/docker-turtles-communication.jpg" height="200">-->
+                        <img src="images/bridge-network.png" height="200">
+                        <img src="images/network-access.png" height="300" class="fragment">
+                        <p>bridge, overlay, ...</p>
+                    </section>
+                    <section>
+                        <h2>bridge</h2>
+                        <blockquote>&ldquo;... are best when you need <span class="doption2">multiple containers</span> to communicate
+                            on the <span class="doption2">same Docker host</span>.&ldquo;</blockquote>
+<pre class="fragment"><code data-trim class="bash">
+$ docker network create fossgis
+
+$ docker run --network fossgis \
+     --name postgis -p 55432:5432 -d mdillon/postgis
+
+$ docker run --network fossgis \
+     --name geoserver -p 58080:8080 -d kartoza/geoserver</code></pre>
+                    </section>
+                    <section>
+                        <h2>Inspect network</h2>
+                        <pre><code class="bash">$ docker network inspect fossgis</code></pre>
+<!--<pre><code data-trim class="bash">
+$ docker network inspect fossgis | jq ".[].Containers"
+</code></pre>-->
+<pre class="fragment"><code data-trim class="json">
+{
+    "5c8b8cf8c7631c028694653e3d35f72d709ab6c9a3fb6b7e127de6993685d10d": {
+        "Name": "geoserver",
+        "EndpointID": "d63198bdab9b9edcf641ecedd2b21853af8c35e574b6e3347ce4fff42baa8163",
+        "MacAddress": "02:42:ac:13:00:03",
+        "IPv4Address": "172.19.0.3/16",
+        "IPv6Address": ""
+    },
+   "e500639420b3f26781652105402bae57e759905514e0f81550450783da35ce61": {
+        "Name": "postgis",
+        "EndpointID": "c6fd0c7388182ade5e600fda374a4e8d220e26b88f66aebf59fb8c747ebd6b1f",
+        "MacAddress": "02:42:ac:13:00:02",
+        "IPv4Address": "172.19.0.2/16",
+        "IPv6Address": ""
+    }
+}</code></pre>
+                    </section>
+                    <!--
+                    <section>
+                        <p>http://localhost:58080/geoserver</p>
+                        <img src="images/geoserver-postgis.png" height="400">
+                    </section>
+                    -->
+                    <section>
+                        <h2>overlay</h2>
+                        <blockquote>&ldquo;... are best when you need <span class="doption2">containers running on different Docker hosts</span> to communicate,
+                            or when multiple applications work together using swarm services.&ldquo;</blockquote>
+<pre class="fragment"><code data-trim class="bash">
+$ docker network create --driver overlay fossgis_swarm
+
+$ docker service create \
+     --network fossgis_swarm mdillon/postgis</code></pre>
+                    </section>
+                </section> <!-- networks end -->
+                <!-- docker compose -->
+                <section>
+                    <section>
+                        <h1>Docker Compose</h1>
+                        <img src="images/docker-compose-logo.png" height="400">
+                    </section>
+                    <section>
+                        <h2>Compose File</h2>
+<pre><code data-trim class="yaml">
+version: "2"
+
+services:
+    postgis:
+        image: mdillon/postgis
+        ports:
+            - "55432:5432"
+        environment:
+            - POSTGRES_PASSWORD=docker
+    geoserver:
+        image: kartoza/geoserver
+        ports:
+            - "58080:8080"</code></pre>
+                    </section>
+                    <section>
+                        <h2>Run services</h2>
+<pre><code data-trim class="bash">
+# Assuming your 'docker-compose.yml'
+# is located in a folder called 'docker'
+$ cd docker
+$ docker-compose up -d
+
+Creating network "docker_default" with the default driver
+Creating docker_postgis_1
+Creating docker_geoserver_1
+
+$ docker ps
+
+CONTAINER ID   IMAGE               ...   PORTS                     NAMES
+2e800f486389   kartoza/geoserver   ...   0.0.0.0:58080->8080/tcp   docker_geoserver_1
+8efe6f9e6132   mdillon/postgis     ...   0.0.0.0:55432->5432/tcp   docker_postgis_1
+</code></pre>
+                    </section>
+                </section> <!-- docker compose -->
+                <!-- docker swarm -->
+                <section>
+                    <section>
+                        <h1>Orchestration</h1>
+                        <ul>
+                            <li><a href="https://docker.com">Docker Swarm</a></li>
+                            <li><a href="https://kubernetes.io">Kubernetes</a></li>
+                            <li><a href="http://rancher.com">Rancher</a></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Docker Swarm</h2>
+                        <p>Since Docker version 1.12</p>
+                        <img src="images/docker-swarm-logo.png" height="300">
+                        <p>Managers and Workers</p>
+                    </section>
+                    <section>
+                        <h2>Manager</h2>
+                        <img src="images/zoidberg-swarm.png" height="300">
+                        <pre><code data-trim class="bash"># Create a manager
+$ docker swarm init --advertise-addr 192.168.99.100
+
+# Generate the token needed to join the manager
+$ docker swarm join-token worker</code></pre>
+                    </section>
+                    <section>
+                        <h2>Workers</h2>
+                        <img src="images/pi_swarm.jpg">
+                        <pre><code data-trim class="bash"># Join the manager
+docker swarm join --token [...] 192.168.99.100:2377</code></pre>
+                    </section>
+                    <section>
+                        <h2>Deploy a service</h2>
+                        <pre><code data-trim class="bash">$ docker service create \
+   --replicas 2 \
+   --name helloworld \
+   alpine ping docker.com</code></pre>
+                    </section>
+                </section> <!-- docker swarm end -->
+                <!-- postgis cluster -->
+                <section>
+                    <section>
+                        <h1>Postgis Cluster</h1>
+                        <img src="images/chrunchy-data.png" width="200">
+                        <img src="images/docker-and-postgres-logos.png" width="400">
+                        <p>with Docker Swarm<br>
+                            and Postgis Containers by <a href="https://github.com/crunchydata">Chrunchy Data</a></p>
+                    </section>
+                    <section>
+                        <h2>Swarm Setup</h2>
+                        <p>See slides to <a href="#/7/1">Docker Swarm</a></p>
+                    </section>
+                    <section>
+                        <h2>Network Setup</h2>
+                        <p>Create an overlay network on the manager node</p>
+                        <pre><code class="bash">$ docker network create --driver overlay postgis_swarm</code></pre>
+                    </section>
+                    <section>
+                        <h2>Master Setup</h2>
+                        <p>Add label to worker1</p> 
+                        <pre><code class="bash">$ docker node update --label-add type=master worker1</code></pre>
+                    </section>
+                    <section>
+                        <h2>Create master (primary)</h2>
+<pre><code data-trim class="bash">
+#!/bin/bash
+MASTER_SERVICE_NAME="postgis-master"
+
+docker service create \
+   --publish "5432:5432" \
+   --mount type=volume,src=$MASTER_SERVICE_NAME-volume,dst=/pgdata,volume-driver=local \
+   --name $MASTER_SERVICE_NAME \
+   --network postgis_swarm \
+   --constraint 'node.labels.type == master' \
+   --env PGHOST=/tmp \
+   --env PG_USER=testuser \
+   --env PG_MODE=primary \
+   --env PG_PRIMARY_USER=master \
+   --env PG_ROOT_PASSWORD=password \
+   --env PG_PASSWORD=password \
+   --env PG_DATABASE=userdb \
+   --env PG_PRIMARY_PORT=5432 \
+   --env PG_PRIMARY_PASSWORD=password \
+   --env PGDATA_PATH_OVERRIDE=persistent \
+   crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0                             
+</code></pre>
+                    </section>
+                    <section>
+                        <h3>Primary options in detail</h3>
+                        <ul>
+                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=$MASTER_SERVICE_NAME-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
+                            <li class="fragment"><span class="doption">--network</span> postgis_swarm</li>
+                            <li class="fragment"><span class="doption">--constraint</span> 'node.labels.type <span class="doption2">==</span> master'</li>
+                            <li class="fragment"><span class="doption">--env</span> PG_MODE=<span class="doption2">primary</span></li>
+                            <li class="fragment"><span class="doption">--env</span> PGDATA_PATH_OVERRIDE=persistent</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>List services</h3>
+<pre><code data-trim class="bash">
+$ docker service ls
+    
+ID            NAME            MODE        REPLICAS  IMAGE
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+</code></pre>
+<!--
+ID            NAME            MODE        REPLICAS  IMAGE
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+-->                        
+                    </section>
+                    <section>
+                        <h2>Create worker</h2>
+<pre><code data-trim class="bash">
+#!/bin/bash
+MASTER_SERVICE_NAME="postgis-master"
+SERVICE_NAME=postgis-worker
+VOLUME_NAME=$SERVICE_NAME-volume
+                        
+docker service create \
+   --publish "15432:5432" \
+   --mount type=volume,src=$VOLUME_NAME,dst=/pgdata,volume-driver=local \
+   --name $SERVICE_NAME \
+   --network postgis_swarm \
+   --constraint 'node.labels.type != master' \
+   --env PGHOST=/tmp \
+   --env PG_USER=testuser \
+   --env PG_MODE=replica \
+   --env PG_PRIMARY_USER=master \
+   --env PG_ROOT_PASSWORD=password \
+   --env PG_PASSWORD=password \
+   --env PG_DATABASE=userdb \
+   --env PG_PRIMARY_PORT=5432 \
+   --env PG_PRIMARY_PASSWORD=password \
+   --env PG_PRIMARY_HOST=$MASTER_SERVICE_NAME \
+   --env PGDATA_PATH_OVERRIDE=persistent \
+   crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+</code></pre>                        
+                    </section>
+<!--
+ID            NAME            MODE        REPLICAS  IMAGE
+s9eyg3kvn0mz  postgis-worker  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0    
+-->
+                    <section>
+                        <h3>Worker options in detail</h3>
+                        <ul>
+                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=$MASTER_SERVICE_NAME-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
+                            <li class="fragment"><span class="doption">--network</span> postgis_swarm</li>
+                            <li class="fragment"><span class="doption">--constraint</span> 'node.labels.type <span class="doption2">!=</span> master'</li>
+                            <li class="fragment"><span class="doption">--env</span> PG_MODE=<span class="doption2">replica</span></li>
+                            <li class="fragment"><span class="doption">--env</span> PGDATA_PATH_OVERRIDE=persistent</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>List services again</h3>
+<pre><code data-trim class="bash">
+$ docker service ls
+
+ID            NAME            MODE        REPLICAS  IMAGE
+s9eyg3kvn0mz  postgis-worker  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0
+xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres-gis:centos7-10.0-1.6.0    
+</code></pre>
+                    </section>
+                    <section>
+                        <h3>Test Postgis cluster</h3>
+<pre><code data-trim class="bash">
+# Show on which node your Postgis instances are running
+$ docker service ps postgis-master
+$ docker service ps postgis-worker
+
+$ docker exec \
+     -it $(docker ps -q --filter name=postgis-master*) bash
+    
+bash-4.2$ psql -U postgres -c 'table pg_stat_replication' postgres
+
+# You should see a row for each replica
+# along with its replication status. 
+</code></pre>
+                    </section>
+                    <section>
+                        <h2>Create GeoServer</h2>
+<pre><code data-trim class="bash">
+#!/bin/bash
+docker service create \
+   --publish "48080:8080" \
+   --name geoserver_swarm \
+   --network postgis_swarm \
+   --constraint 'node.labels.type == master' \
+   kartoza/geoserver
+</pre></code>
+                    </section>
+                    <section>
+                        <h2>Create GeoServer using Docker Compose</h2>
+<pre><code data-trim class="yaml">
+version: "3"
+
+services:
+    geoserver:
+        image: kartoza/geoserver
+        ports:
+            - "48080:8080"
+        networks:
+            - postgis_swarm
+        deploy:
+            placement:
+                constraints: [node.labels.type == master]
+            
+networks:
+    postgis_swarm:
+        external: true
+
+# docker stack deploy -c docker-compose.yml geoserver
+</pre></code>
+                        </section>
+                </section> <!-- postgis cluster end -->
+                <section>
+                    <!-- The end -->
+                    <section>
+                        <h1>The End</h1>
+                    </section>
+                    <section>
+                        <h1>Hey ho</h1>
+                        <p>Stefan Küthe<br>
+                        stefan.kuethe@manserv.de</p>
+                        <ul>
+                            <li>dockerhub:<br>
+                                <a href="https://hub.docker.com/r/crazycapivara">https://hub.docker.com/r/crazycapivara</a></li>
+                            <li>github:<br>
+                                <a href="https://github.com/crazycapivara">https://github.com/crazycapivara</a></li>
+                            <li><a href="https://github.com/crazycapivara/docker-postgis-cluster">docker-postgis-cluster</a></li>
+                        </ul>
+                    </section>
+                </section> <!-- The end end -->
 			</div>
 		</div>
 
@@ -37,6 +504,9 @@
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
+                slideNumber: true,
+                help: true,
+                transition: 'none',
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
 					{ src: 'plugin/markdown/markdown.js' },
