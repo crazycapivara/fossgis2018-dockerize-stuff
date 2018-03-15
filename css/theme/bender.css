@@ -1,3 +1,4 @@
+@import url(../../lib/font/open-sans-condensed/open-sans-condensed.css);
 @import url(../../lib/font/pt-mono/pt-mono.css);
 /**
  * Black theme for reveal.js. This is the opposite of the 'white' theme.
@@ -58,7 +59,7 @@ body {
 .reveal h6 {
   margin: 0 0 20px 0;
   color: #fff;
-  font-family: "PT Sans", "Vollkorn", "Calibri", "Source Sans Pro", Helvetica, sans-serif;
+  font-family: "Open Sans Condensed", "Vollkorn", "Calibri", "Source Sans Pro", Helvetica, sans-serif;
   font-weight: 600;
   font-variant: small-caps;
   line-height: 1.2;

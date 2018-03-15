@@ -2,7 +2,7 @@
 @font-face {
     font-family: 'PT Mono';
     font-style: normal;
-    font-weight: normal;
+    font-weight: 400;
     src: url('pt-mono-v5-latin-regular.eot'); /* IE9 Compat Modes */
     src: local('PT Mono'), local('PTMono-Regular'),
          url('pt-mono-v5-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
