@@ -68,7 +68,22 @@ $ time for i in $(seq 1 100); do \
                     </section>
                     <section>
                         <h2>Dockerfile</h2>
-                        
+<pre><code data-trim class="docker">
+FROM ubuntu:16.04
+
+LABEL maintainer="Stefan Kuethe"
+
+RUN apt-get update \
+    && apt-get install python-mapnik -y --no-install-recommends \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./data /mapnik/example
+
+WORKDIR /mapnik/example
+
+CMD ["python", "generate_tiles.py", "map_file.xml"]
+</code></pre>                        
                     </section>
                     <section>
                         <h2>Container</h2>
@@ -211,7 +226,7 @@ $ docker service create \
                     <section>
                         <h2>Compose File</h2>
 <pre><code data-trim class="yaml">
-version: 2
+version: "2"
 
 services:
     postgis:
@@ -436,6 +451,29 @@ docker service create \
    kartoza/geoserver
 </pre></code>
                     </section>
+                    <section>
+                        <h2>Create GeoServer using Docker Compose</h2>
+<pre><code data-trim class="yaml">
+version: "3"
+
+services:
+    geoserver:
+        image: kartoza/geoserver
+        ports:
+            - "48080:8080"
+        networks:
+            - postgis_swarm
+        deploy:
+            placement:
+                constraints: [node.labels.type == master]
+            
+networks:
+    postgis_swarm:
+        external: true
+
+# docker stack deploy -c docker-compose.yml geoserver
+</pre></code>
+                        </section>
                 </section> <!-- postgis cluster end -->
                 <section>
                     <!-- The end -->
