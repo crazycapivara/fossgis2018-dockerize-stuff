@@ -49,7 +49,8 @@
                         <image src="images/containers.png" height="500">
                     </section>
                     <section>
-                        <h3>Spin up 100 nginx containers in less than 1 minute</h3>
+                        <h3>Spin up 100 Nginx containers<br>
+                            in less than 1 minute</h3>
 <pre><code data-trim class="bash">
 $ time for i in $(seq 1 100); do \
      docker run -d -P --name nginx_$i nginx:alpine \
@@ -138,8 +139,6 @@ $ docker run -d --name postgis \
      -p 55432:5432 \
      mdillon/postgis
 
-d4fdb5c6b51b4463a3244ead0247640998bbcdb900f7ca6f2ce08206b5bfbc3a
-
 $ docker ps
 
 CONTAINER ID   IMAGE             ...   PORTS                     NAMES
@@ -226,6 +225,7 @@ $ docker service create \
                     <section>
                         <h2>Compose File</h2>
 <pre><code data-trim class="yaml">
+# docker-compose.yml
 version: "2"
 
 services:
@@ -289,7 +289,7 @@ $ docker swarm join-token worker</code></pre>
                         <h2>Workers</h2>
                         <img src="images/pi_swarm.jpg">
                         <pre><code data-trim class="bash"># Join the manager
-docker swarm join --token [...] 192.168.99.100:2377</code></pre>
+$ docker swarm join --token [...] 192.168.99.100:2377</code></pre>
                     </section>
                     <section>
                         <h2>Deploy a service</h2>
@@ -350,7 +350,7 @@ docker service create \
                     <section>
                         <h3>Primary options in detail</h3>
                         <ul>
-                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=$MASTER_SERVICE_NAME-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
+                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=${MASTER_SERVICE_NAME}-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
                             <li class="fragment"><span class="doption">--network</span> postgis_swarm</li>
                             <li class="fragment"><span class="doption">--constraint</span> 'node.labels.type <span class="doption2">==</span> master'</li>
                             <li class="fragment"><span class="doption">--env</span> PG_MODE=<span class="doption2">primary</span></li>
@@ -371,16 +371,15 @@ xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres
 -->                        
                     </section>
                     <section>
-                        <h2>Create worker</h2>
+                        <h2>Create worker(s)</h2>
 <pre><code data-trim class="bash">
 #!/bin/bash
 MASTER_SERVICE_NAME="postgis-master"
-SERVICE_NAME=postgis-worker
-VOLUME_NAME=$SERVICE_NAME-volume
+SERVICE_NAME="postgis-worker"
                         
 docker service create \
    --publish "15432:5432" \
-   --mount type=volume,src=$VOLUME_NAME,dst=/pgdata,volume-driver=local \
+   --mount type=volume,src=$SERVICE_NAME-volume,dst=/pgdata,volume-driver=local \
    --name $SERVICE_NAME \
    --network postgis_swarm \
    --constraint 'node.labels.type != master' \
@@ -406,7 +405,7 @@ xvfgad0i2mgv  postgis-master  replicated  1/1       crunchydata/crunchy-postgres
                     <section>
                         <h3>Worker options in detail</h3>
                         <ul>
-                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=$MASTER_SERVICE_NAME-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
+                            <li class="fragment"><span class="doption">--mount</span><br> type=volume,<br> src=${SERVICE_NAME}-volume,<br> dst=/pgdata,<br> volume-driver=local</li>
                             <li class="fragment"><span class="doption">--network</span> postgis_swarm</li>
                             <li class="fragment"><span class="doption">--constraint</span> 'node.labels.type <span class="doption2">!=</span> master'</li>
                             <li class="fragment"><span class="doption">--env</span> PG_MODE=<span class="doption2">replica</span></li>
