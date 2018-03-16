@@ -166,6 +166,7 @@ body {
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3); }
 
 .reveal code {
+  border-radius: 5px;
   font-family: "PT Mono", monospace;
   text-transform: none; }
 
