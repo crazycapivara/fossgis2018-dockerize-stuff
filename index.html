@@ -310,7 +310,8 @@ $ docker swarm join --token [...] 192.168.99.100:2377</code></pre>
                     </section>
                     <section>
                         <h2>Swarm Setup</h2>
-                        <p>See slides to <a href="#/7/1">Docker Swarm</a></p>
+                        <p><img src="images/cluster-setup.png" height="400"></p>
+                        <p>See also slides to <a href="#/7/1">Docker Swarm</a></p>
                     </section>
                     <section>
                         <h2>Network Setup</h2>
@@ -319,8 +320,8 @@ $ docker swarm join --token [...] 192.168.99.100:2377</code></pre>
                     </section>
                     <section>
                         <h2>Master Setup</h2>
-                        <p>Add label to worker1</p> 
-                        <pre><code class="bash">$ docker node update --label-add type=master worker1</code></pre>
+                        <p>Add label <i>master</i>to manager</p>
+                        <pre><code class="bash">$ docker node update --label-add type=master manager</code></pre>
                     </section>
                     <section>
                         <h2>Create master (primary)</h2>
