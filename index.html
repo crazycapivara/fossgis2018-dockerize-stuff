@@ -493,6 +493,20 @@ networks:
 </pre></code>
                         </section>
                 </section> <!-- postgis cluster end -->
+                <!-- Docker GUI -->
+                <section>
+                    <h1>Docker GUI</h1>
+                    <h2>Portainer</h2>
+<pre><code data-trim class="bash">
+$ docker service create \
+    --name portainer \
+    --publish 9000:9000 \
+    --constraint 'node.role == manager' \
+    --mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock \
+    portainer/portainer \
+    -H unix:///var/run/docker.sock
+</code></pre>
+                </section> <!-- Docker GUI end -->
                 <section>
                     <!-- The end -->
                     <section>
