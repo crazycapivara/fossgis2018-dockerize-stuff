@@ -495,9 +495,10 @@ networks:
                 </section> <!-- postgis cluster end -->
                 <!-- Docker GUI -->
                 <section>
-                    <h1>Docker GUI</h1>
-                    <h2>Portainer</h2>
-                    <p><a href="https://portainer.io/">https://portainer.io/</a></p>
+                    <section>
+                        <h1>Docker GUI</h1>
+                        <h2>Portainer</h2>
+                        <p><a href="https://portainer.io/">https://portainer.io/</a></p>
 <pre><code data-trim class="bash">
 $ docker service create \
     --name portainer \
@@ -507,6 +508,11 @@ $ docker service create \
     portainer/portainer \
     -H unix:///var/run/docker.sock
 </code></pre>
+                    </section>
+                    <section>
+                        <h2>Screenshot</h2>
+                        <img src="images/portainer3.png">
+                    </section>
                 </section> <!-- Docker GUI end -->
                 <section>
                     <!-- The end -->
